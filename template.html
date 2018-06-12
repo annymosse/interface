@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>pharm template</title>
+    <!-- FONT -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css">
+    <!-- / FONT -->
+    <link rel="stylesheet" href="https://unpkg.com/vuetify@1.1.0-beta.3/dist/vuetify.min.css">
+
+    <style>
+        .v-list__tile--active{
+            border-right: 5px solid;
+        }
+        .unRecover{
+            background:rgba(255, 39, 0, 0.1)
+        }
+        /* .theme--light .v-table tbody tr:hover:not(.datatable__expand-row) {
+            background: #eee;
+            border-left:3px solid;
+        } */
+        .theme--light .v-table tbody tr:hover:not(.datatable__expand-row) .unRecover:first-child{
+            border-left:3px solid red;
+            padding-left: 22px
+        }
+        td{
+            white-space: nowrap;
+        }
+        /* speed dial */
+        .v-speed-dial {
+            position: absolute;
+        }
+
+        .btn--floating {
+            position: relative;
+        }
+        /* /speed dial */
+        /* @media screen and (max-width: 992px) {
+            .v-toolbar__content {
+                background-color: blue;
+            }
+        } */
+        .v-toolbar__content {
+            /* background-color: blue; */
+            width: 100%
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <v-app>
+            <v-navigation-drawer width="260" app v-model="drawer" :mini-variant="mini" :permanent="!this.$vuetify.breakpoint.mdAndDown" _dark _absolute _fixed>
+                <v-list class="pa-1">
+                    <v-list-tile v-if="mini" @click.stop="mini = !mini">
+                        <v-list-tile-action>
+                            <v-icon>chevron_right</v-icon>
+                        </v-list-tile-action>
+                    </v-list-tile>
+                    <v-list-tile avatar tag="div">
+                        <v-list-tile-avatar>
+                            <img src="https://randomuser.me/api/portraits/men/85.jpg">
+                        </v-list-tile-avatar>
+                        <v-list-tile-content>
+                            <v-list-tile-title>John Leider</v-list-tile-title>
+                        </v-list-tile-content>
+                        <v-list-tile-action>
+                            <v-btn icon @click.stop="mini = !mini">
+                                <v-icon>chevron_left</v-icon>
+                            </v-btn>
+                        </v-list-tile-action>
+                    </v-list-tile>
+                </v-list>
+                <v-list class="pt-0" dense>
+                    <v-divider light></v-divider>
+                    <v-list-tile v-for="item in items" :key="item.icon" @click="" :to="{path:'/'+item.title.toLowerCase()}">
+                        <v-list-tile-action>
+                            <v-icon>{{ item.icon }}</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                </v-list>
+            </v-navigation-drawer>
+            <v-content>
+                <v-container fluid app grid-list-sm>
+                    <router-view></router-view>
+                </v-container>
+            </v-content>
+        </v-app>
+    </div>
+    <template id="home">
+        <v-layout justify-center>
+            <div>Home {{msg}}</div>
+        </v-layout>
+    </template>
+    <template id="sell">
+        <v-layout justify-center wrap>
+            <v-flex xs12 lg4>
+                <v-card>
+                    <v-progress-linear value="100" :indeterminate="productSearch.start_search" style="margin-bottom: -20px;margin-top: 0"></v-progress-linear>
+                    <v-card-title>
+                        <v-text-field
+                        v-model="productSearch.search"
+                        append-icon="search"
+                        label="Search (DCI,Name Comercial)"
+                        single-line
+                        hide-details
+                        ></v-text-field>
+                    </v-card-title>
+                    <v-data-table
+                        :rows-per-page-items="productSearch.limit_row"
+                        :headers="productSearch.headers"
+                        :items="productSearch.bodyList"
+                        :search="productSearch.search"
+                        :custom-filter="custumFilter"
+                    >
+                        <template slot="items" slot-scope="props">
+                            <td :class="!props.item.recover?'unRecover':''">{{ props.item.nomCom }}</td>
+                            <td :class="!props.item.recover?'unRecover':''" class="recover">{{ props.item.dose }}</td>
+                            <td :class="!props.item.recover?'unRecover':''">{{ props.item.form }}</td>
+                            <td :class="!props.item.recover?'unRecover':''" class="-text-xs-right">{{ props.item.num }}</td>
+                            <!-- num,dci -->
+                        </template>
+                        <v-alert slot="no-results" :value="true" color="error" icon="warning">
+                        Your search for "{{ productSearch.search }}" found no results.
+                        </v-alert>
+                    </v-data-table>
+                </v-card>
+            </v-flex>
+            <v-flex xs12 lg8>
+                <v-card>
+                    <v-progress-linear value="100" :indeterminate="ordonnance.start_search" style="margin: 0px;"></v-progress-linear>
+                    <v-card-title style="padding-bottom: 9px">
+                        <v-layout wrap>
+                            <v-flex xs12 lg4>
+                                <div style="margin-top: 0px">
+                                    Total price: <!-- {{ ordonnance.bodyList.map(function(x){return x.price}).reduce(function(acc, val) { return acc + val; }) }} -->
+                                </div>
+                            </v-flex>
+                            <v-flex xs12 lg8>
+                                <v-text-field
+                                v-model="ordonnance.filter"
+                                append-icon="filter_list"
+                                label="Filter products"
+                                single-line
+                                hide-details
+                                style="margin-top: -5px;margin-bottom:8px"
+                                ></v-text-field>
+                            </v-flex>
+                        </v-layout>
+                    </v-card-title>
+                    <v-data-table
+                        _hide-actions
+                        :rows-per-page-items="ordonnance.limit_row"
+                        :headers="ordonnance.headers"
+                        :items="ordonnance.bodyList"
+                        :search="ordonnance.filter"
+                        no-data-text="There is no medical product"
+                    >
+                        <template slot="items" slot-scope="props">
+                            <td :class="props.item.price>500?'unRecover':''">{{ props.item.product }}</td>
+                            <td :class="props.item.price>500?'unRecover':''">{{ props.item.dose }}</td>
+                            <td :class="props.item.price>500?'unRecover':''" class="-text-xs-right">{{ props.item.price }}</td>
+                        </template>
+                        <v-alert slot="no-results" :value="true" color="error" icon="warning">
+                        "{{ ordonnance.filter }}" is not founded.
+                        </v-alert>
+                    </v-data-table>
+                </v-card>
+            </v-flex>
+        </v-layout>
+    </template>
+    <template id="factures">
+        <v-layout justify-center wrap>
+            <v-flex xs12>
+                <v-toolbar
+                    floating
+                    dense
+                    style="width: calc(100% - 30px);background-color: white"
+                  >
+                    <v-text-field
+                        prepend-icon="search"
+                        v-model="productSearch.search"
+                        label="Search (anything)"
+                        hide-details
+                        single-line
+                        style="margin: 0 0 0 10px;width: 100%"
+                    ></v-text-field>
+                    <v-menu bottom left>
+                        <v-btn slot="activator" icon _style="border-radius: 100%;border:1px solid black">
+                            <v-icon>add</v-icon>
+                        </v-btn>
+                        <v-list dense class="pt-0 pb-0">
+                            <v-list-tile @click="">
+                                <v-list-tile-action>
+                                    <v-icon>fas fa-pencil-alt</v-icon>
+                                </v-list-tile-action>
+                                <v-list-tile-content>
+                                    <v-list-tile-title>Manual</v-list-tile-title>
+                                </v-list-tile-content>
+                            </v-list-tile>
+                            <v-list-tile @click="">
+                                <v-list-tile-action>
+                                    <v-icon>fas fa-qrcode</v-icon>
+                                </v-list-tile-action>
+                                <v-list-tile-content>
+                                    <v-list-tile-title>QR code</v-list-tile-title>
+                                </v-list-tile-content>
+                            </v-list-tile>
+                            <v-list-tile @click="">
+                                <v-list-tile-action>
+                                    <v-icon>far fa-file-alt</v-icon>
+                                </v-list-tile-action>
+                                <v-list-tile-content>
+                                    <v-list-tile-title>Import file</v-list-tile-title>
+                                </v-list-tile-content>
+                            </v-list-tile>
+                        </v-list>
+                    </v-menu>
+                </v-toolbar>
+                <v-card>
+                    <!-- <v-progress-linear value="100" :indeterminate="productSearch.start_search" style="margin-bottom: -32px;margin-top: 0"></v-progress-linear> -->
+                    <v-data-table
+                        :rows-per-page-items="productSearch.limit_row"
+                        :headers="productSearch.headers"
+                        :items="productSearch.bodyList"
+                        :search="productSearch.search"
+                        item-key="nomcom"
+                    >
+                        <template slot="items" slot-scope="props">
+                            <tr @click="props.expanded = !props.expanded">
+                                <td :class="props.item.ppa>500?'unRecover':''">{{ props.item.nomcom }}</td>
+                                <td :class="props.item.ppa>500?'unRecover':''">{{ props.item.num_lot }}</td>
+                                <td :class="props.item.ppa>500?'unRecover':''">{{ props.item.expiration }}</td>
+                                <td :class="props.item.ppa>500?'unRecover':''">{{ props.item.prix_dachat }}</td>
+                                <td :class="props.item.ppa>500?'unRecover':''">{{ props.item.ppa }}</td>
+                                <td :class="props.item.ppa>500?'unRecover':''">{{ props.item.shp }}</td>
+                                <td :class="props.item.ppa>500?'unRecover':''">{{ props.item.ppu }}</td>
+                                <td :class="props.item.ppa>500?'unRecover':''">{{ props.item.qtt }}</td>
+                                <td :class="props.item.ppa>500?'unRecover':''">{{ props.item.ug }}</td>
+                                <td :class="props.item.ppa>500?'unRecover':''">{{ props.item.rist }}</td>
+                                <td :class="props.item.ppa>500?'unRecover':''">{{ props.item.tva }}</td>
+                                <td :class="props.item.ppa>500?'unRecover':''">{{ props.item.marge }}</td>
+                                <td :class="props.item.ppa>500?'unRecover':''">{{ props.item.status }}</td>
+                                <td :class="props.item.ppa>500?'unRecover':''">{{ props.item.emplacment }}</td>
+                                <td :class="props.item.ppa>500?'unRecover':''">{{ props.item.num_factur }}</td>
+                                <td :class="props.item.ppa>500?'unRecover':''">{{ props.item.fournis }}</td>
+                                <td :class="props.item.ppa>500?'unRecover':''">{{ props.item.date_factur }}</td>
+                            </tr>
+                        </template>
+                        <template slot="expand" slot-scope="props">
+                            <v-card flat style="height: 100px;border: 2px dashed #0000005c;box-shadow: inset 0 0 20px black;">
+                                <v-card-text>Fournissure: {{ props.item.fournis }}</v-card-text>
+                            </v-card>
+                        </template>
+                        <v-alert slot="no-results" :value="true" color="error" icon="warning">
+                        Your search for "{{ productSearch.search }}" found no results.
+                        </v-alert>
+                    </v-data-table>
+                </v-card>
+            </v-flex>
+        </v-layout>
+    </template>
+    <template id="storage">
+        <v-layout wrap _justify-center>
+            <v-flex xs12>
+                <v-card>
+                    <v-card-title>
+                    <v-text-field
+                        v-model="search"
+                        append-icon="search"
+                        label="Search"
+                        single-line
+                        hide-details
+                    ></v-text-field>
+                    <v-spacer></v-spacer>
+                    settings of notifs for (min,max,fournis,empty...)
+                    </v-card-title>
+                    <v-data-table
+                    :headers="storageHeader"
+                    :items="storageBody"
+                    :search="search"
+                    :rows-per-page-items="limit_row"
+                    >
+                    <template slot="items" slot-scope="props">
+                        <td style="height: 30px">{{ props.item.nomcom }}</td>
+                        <td style="height: 30px">{{ props.item.num_lot }}</td>
+                        <td style="height: 30px">{{ props.item.expiration }}</td>
+                        <td style="height: 30px">{{ props.item.prix_dachat }}</td>
+                        <td style="height: 30px">{{ props.item.ppa }}</td>
+                        <td style="height: 30px">{{ props.item.shp }}</td>
+                        <td style="height: 30px">{{ props.item.ppu }}</td>
+                        <td style="height: 30px">{{ props.item.qtt }}</td>
+                        <td style="height: 30px">{{ props.item.ug }}</td>
+                        <td style="height: 30px">{{ props.item.rist }}</td>
+                        <td style="height: 30px">{{ props.item.tva }}</td>
+                        <td style="height: 30px">{{ props.item.marge }}</td>
+                        <td style="height: 30px">{{ props.item.status }}</td>
+                        <td style="height: 30px">{{ props.item.emplacment }}</td>
+                        <td style="height: 30px">{{ props.item.num_factur }}</td>
+                        <td style="height: 30px">{{ props.item.fournis }}</td>
+                        <td style="height: 30px">{{ props.item.date_factur }}</td>
+                    </template>
+                    <v-alert slot="no-results" :value="true" color="error" icon="warning">
+                        Your search for "{{ search }}" found no results.
+                    </v-alert>
+                    </v-data-table>
+                </v-card>
+            </v-flex>
+        </v-layout>
+    </template>
+    <template id="fournissure">
+        <v-layout justify-center>
+            <div>fournissure {{msg}}</div>
+        </v-layout>
+    </template>
+    <template id="stagier">
+        <v-layout justify-center>
+            <div>stagier {{msg}}</div>
+        </v-layout>
+    </template>
+    <template id="patients">
+        <v-layout justify-center>
+            <div>patients {{msg}}</div>
+        </v-layout>
+    </template>
+    <template id="seller">
+        <v-layout _justify-center>
+            <div>seller {{msg}}</div>
+        </v-layout>
+    </template>
+    <template id="analytics">
+        <v-layout justify-center>
+            <div>analitycs {{msg}}</div>
+        </v-layout>
+    </template>
+    <template id="settings">
+        <v-layout justify-center>
+            <div>settings {{msg}}</div>
+        </v-layout>
+    </template>
+    <template id="icons">
+        <v-layout wrap justify-center>
+            <v-flex xs3 v-for="(icon,ndex) in icons" :key="ndex">
+                <v-chip color="light-green" text-color="white">
+                    <v-avatar class="pl-2">
+                        <v-icon>{{icon.icon}}</v-icon>
+                    </v-avatar>
+                    {{icon.icon}}
+                </v-chip>
+            </v-flex>
+        </v-layout>
+    </template>
+
+    <script src="https://chancejs.com/chance.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js'></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.0.1/vue-router.js'></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/vuetify/1.1.0-alpha.3/vuetify.min.js"></script> -->
+    <script src="https://unpkg.com/vuetify@1.1.0-beta.3/dist/vuetify.min.js"></script>
+    <script src="medic.json.js"></script>
+    <script>
+        var chance=new Chance();
+        var home,sell,facture,storage,icons,settings,seller,patients,stagier,fournissure,analytics;
+
+        home={
+                path: '/home',component: {
+                    data() {
+                        return {
+                            msg: 'hi'
+                        }
+                    },
+                    template: "#home"
+                }
+            };
+        sell={
+                path: '/sell',component: {
+                    data () {
+                        return {
+                            productSearch:{
+                                search: '',
+                                limit_row:[5],
+                                start_search:false,
+                                headers: [
+                                    {
+                                        text: 'Product ',
+                                        align: 'left',
+                                        sortable: true,
+                                        value: 'nomCom'
+                                    },
+                                    { text: 'Dose', value: 'dose' },
+                                    { text: 'Form', value: 'form' },
+                                    { text: 'Price', value: 'recover' }
+                                ],
+                                bodyList: medics
+                            },
+                            ordonnance:{
+                                filter:'',
+                                limit_row:[-1],
+                                headers: [
+                                    {
+                                        text: 'Product ',
+                                        align: 'left',
+                                        sortable: true,
+                                        value: 'product'
+                                    },
+                                    { text: 'Dose', value: 'dose' },
+                                    { text: 'Price', value: 'price' }
+                                ],
+                                bodyList: [
+                                    {product:chance.name(),dose:chance.age(),price:0}
+                                ]
+                            }
+                        }
+                    },
+                    methods:{
+                        custumFilter(items, search, filter){
+                                search = search.toString().toLowerCase()
+                                return items.filter(i => (
+                                    Object.keys(i).some(j => filter(i[j], search))
+                                ))
+                        }
+                    },
+                    template: "#sell"
+                }
+            };
+        facture={
+                path: '/factures',component: {
+                    data() {
+                        return {
+                            msg: 'hi',
+                            productSearch:{
+                                search: '',
+                                limit_row:[5,10,{text:'All',value:-1}],
+                                start_search:false,
+                                headers: [
+                                    { text: 'nomcom', value: 'nomcom',align: 'left',sortable: false },
+                                    { text: 'num lot', value: 'num_lot' },
+                                    { text: 'expiration', value: 'expiration' },
+                                    { text: 'prix dachat', value: 'prix_dachat' },
+                                    { text: 'ppa', value: 'ppa' },
+                                    { text: 'shp', value: 'shp' },
+                                    { text: 'ppu(vent)', value: 'ppu' },
+                                    { text: 'qtt', value: 'qtt' },
+                                    { text: 'ug ?', value: 'ug' },
+                                    { text: 'rist (%) ?', value: 'rist' },
+                                    { text: 'tva', value: 'tva' },
+                                    { text: 'marge (%)', value: 'marge' },
+                                    { text: 'status (confirm)', value: 'status' },
+                                    { text: 'emplacment', value: 'emplacment' },
+                                    { text: 'num factur', value: 'num_factur' },
+                                    { text: 'fournis', value: 'fournis' },
+                                    { text: 'date factur', value: 'date_factur' }
+                                ],
+                                bodyList: [
+                                    {
+                                        nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        expiration:chance.date({string: true}),
+                                        prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                        ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        qtt:chance.integer({ min: 1, max: 500 }),
+                                        ug:'',
+                                        rist:'',
+                                        tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                        status:chance.bool(),
+                                        emplacment:'',
+                                        num_factur:chance.integer({ min: 1, max: 500 }),
+                                        fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        date_factur:chance.date({string: true}),
+                                    },
+                                    {
+                                        nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        expiration:chance.date({string: true}),
+                                        prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                        ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        qtt:chance.integer({ min: 1, max: 500 }),
+                                        ug:'',
+                                        rist:'',
+                                        tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                        status:chance.bool(),
+                                        emplacment:'',
+                                        num_factur:chance.integer({ min: 1, max: 500 }),
+                                        fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        date_factur:chance.date({string: true}),
+                                    },
+                                    {
+                                        nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        expiration:chance.date({string: true}),
+                                        prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                        ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        qtt:chance.integer({ min: 1, max: 500 }),
+                                        ug:'',
+                                        rist:'',
+                                        tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                        status:chance.bool(),
+                                        emplacment:'',
+                                        num_factur:chance.integer({ min: 1, max: 500 }),
+                                        fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        date_factur:chance.date({string: true}),
+                                    },
+                                    {
+                                        nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        expiration:chance.date({string: true}),
+                                        prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                        ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        qtt:chance.integer({ min: 1, max: 500 }),
+                                        ug:'',
+                                        rist:'',
+                                        tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                        status:chance.bool(),
+                                        emplacment:'',
+                                        num_factur:chance.integer({ min: 1, max: 500 }),
+                                        fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        date_factur:chance.date({string: true}),
+                                    },
+                                    {
+                                        nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        expiration:chance.date({string: true}),
+                                        prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                        ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        qtt:chance.integer({ min: 1, max: 500 }),
+                                        ug:'',
+                                        rist:'',
+                                        tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                        status:chance.bool(),
+                                        emplacment:'',
+                                        num_factur:chance.integer({ min: 1, max: 500 }),
+                                        fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        date_factur:chance.date({string: true}),
+                                    },
+                                    {
+                                        nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        expiration:chance.date({string: true}),
+                                        prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                        ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        qtt:chance.integer({ min: 1, max: 500 }),
+                                        ug:'',
+                                        rist:'',
+                                        tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                        status:chance.bool(),
+                                        emplacment:'',
+                                        num_factur:chance.integer({ min: 1, max: 500 }),
+                                        fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        date_factur:chance.date({string: true}),
+                                    },
+                                    {
+                                        nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        expiration:chance.date({string: true}),
+                                        prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                        ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        qtt:chance.integer({ min: 1, max: 500 }),
+                                        ug:'',
+                                        rist:'',
+                                        tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                        status:chance.bool(),
+                                        emplacment:'',
+                                        num_factur:chance.integer({ min: 1, max: 500 }),
+                                        fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        date_factur:chance.date({string: true}),
+                                    },
+                                    {
+                                        nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        expiration:chance.date({string: true}),
+                                        prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                        ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        qtt:chance.integer({ min: 1, max: 500 }),
+                                        ug:'',
+                                        rist:'',
+                                        tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                        status:chance.bool(),
+                                        emplacment:'',
+                                        num_factur:chance.integer({ min: 1, max: 500 }),
+                                        fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        date_factur:chance.date({string: true}),
+                                    },
+                                    {
+                                        nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        expiration:chance.date({string: true}),
+                                        prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                        ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        qtt:chance.integer({ min: 1, max: 500 }),
+                                        ug:'',
+                                        rist:'',
+                                        tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                        marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                        status:chance.bool(),
+                                        emplacment:'',
+                                        num_factur:chance.integer({ min: 1, max: 500 }),
+                                        fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                        date_factur:chance.date({string: true}),
+                                    }
+                                ]
+                            },
+                        }
+                    },
+                    template: "#factures"
+                }
+            };
+        storage={
+                path: '/storage',component: {
+                    data () {
+                        return {
+                            limit_row:[10,{text:'All',value:-1}],
+                            search: '',
+                            storageHeader: [
+                                { text: 'nomcom', value: 'nomcom',align: 'left',sortable: false },
+                                { text: 'num lot', value: 'num_lot' },
+                                { text: 'expiration', value: 'expiration' },
+                                { text: 'prix dachat', value: 'prix_dachat' },
+                                { text: 'ppa', value: 'ppa' },
+                                { text: 'shp', value: 'shp' },
+                                { text: 'ppu(vent)', value: 'ppu' },
+                                { text: 'qtt', value: 'qtt' },
+                                { text: 'ug ?', value: 'ug' },
+                                { text: 'rist (%) ?', value: 'rist' },
+                                { text: 'tva', value: 'tva' },
+                                { text: 'marge (%)', value: 'marge' },
+                                { text: 'status (confirm)', value: 'status' },
+                                { text: 'emplacment', value: 'emplacment' },
+                                { text: 'num factur', value: 'num_factur' },
+                                { text: 'fournis', value: 'fournis' },
+                                { text: 'date factur', value: 'date_factur' }
+                            ],
+                            storageBody: [
+                                {
+                                    nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    expiration:chance.date({string: true}),
+                                    prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                    ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    qtt:chance.integer({ min: 1, max: 500 }),
+                                    ug:'',
+                                    rist:'',
+                                    tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                    status:chance.bool(),
+                                    emplacment:'',
+                                    num_factur:chance.integer({ min: 1, max: 500 }),
+                                    fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    date_factur:chance.date({string: true}),
+                                },
+                                {
+                                    nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    expiration:chance.date({string: true}),
+                                    prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                    ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    qtt:chance.integer({ min: 1, max: 500 }),
+                                    ug:'',
+                                    rist:'',
+                                    tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                    status:chance.bool(),
+                                    emplacment:'',
+                                    num_factur:chance.integer({ min: 1, max: 500 }),
+                                    fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    date_factur:chance.date({string: true}),
+                                },
+                                {
+                                    nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    expiration:chance.date({string: true}),
+                                    prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                    ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    qtt:chance.integer({ min: 1, max: 500 }),
+                                    ug:'',
+                                    rist:'',
+                                    tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                    status:chance.bool(),
+                                    emplacment:'',
+                                    num_factur:chance.integer({ min: 1, max: 500 }),
+                                    fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    date_factur:chance.date({string: true}),
+                                },
+                                {
+                                    nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    expiration:chance.date({string: true}),
+                                    prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                    ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    qtt:chance.integer({ min: 1, max: 500 }),
+                                    ug:'',
+                                    rist:'',
+                                    tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                    status:chance.bool(),
+                                    emplacment:'',
+                                    num_factur:chance.integer({ min: 1, max: 500 }),
+                                    fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    date_factur:chance.date({string: true}),
+                                },
+                                {
+                                    nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    expiration:chance.date({string: true}),
+                                    prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                    ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    qtt:chance.integer({ min: 1, max: 500 }),
+                                    ug:'',
+                                    rist:'',
+                                    tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                    status:chance.bool(),
+                                    emplacment:'',
+                                    num_factur:chance.integer({ min: 1, max: 500 }),
+                                    fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    date_factur:chance.date({string: true}),
+                                },
+                                {
+                                    nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    expiration:chance.date({string: true}),
+                                    prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                    ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    qtt:chance.integer({ min: 1, max: 500 }),
+                                    ug:'',
+                                    rist:'',
+                                    tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                    status:chance.bool(),
+                                    emplacment:'',
+                                    num_factur:chance.integer({ min: 1, max: 500 }),
+                                    fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    date_factur:chance.date({string: true}),
+                                },
+                                {
+                                    nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    expiration:chance.date({string: true}),
+                                    prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                    ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    qtt:chance.integer({ min: 1, max: 500 }),
+                                    ug:'',
+                                    rist:'',
+                                    tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                    status:chance.bool(),
+                                    emplacment:'',
+                                    num_factur:chance.integer({ min: 1, max: 500 }),
+                                    fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    date_factur:chance.date({string: true}),
+                                },
+                                {
+                                    nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    expiration:chance.date({string: true}),
+                                    prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                    ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    qtt:chance.integer({ min: 1, max: 500 }),
+                                    ug:'',
+                                    rist:'',
+                                    tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                    status:chance.bool(),
+                                    emplacment:'',
+                                    num_factur:chance.integer({ min: 1, max: 500 }),
+                                    fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    date_factur:chance.date({string: true}),
+                                },
+                                {
+                                    nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    expiration:chance.date({string: true}),
+                                    prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                    ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    qtt:chance.integer({ min: 1, max: 500 }),
+                                    ug:'',
+                                    rist:'',
+                                    tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                    status:chance.bool(),
+                                    emplacment:'',
+                                    num_factur:chance.integer({ min: 1, max: 500 }),
+                                    fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    date_factur:chance.date({string: true}),
+                                }
+                            ]
+                        }
+                    },
+                    template: "#storage"
+                }
+            };
+        fournissure={
+                path: '/fournissure',component: {
+                    data() {
+                        return {
+                            msg: 'hi'
+                        }
+                    },
+                    template: "#fournissure"
+                }
+            };
+        stagier={
+                path: '/stagier',component: {
+                    data() {
+                        return {
+                            msg: 'hi'
+                        }
+                    },
+                    template: "#stagier"
+                }
+            };
+        patients={
+                path: '/patients',component: {
+                    data() {
+                        return {
+                            msg: 'hi'
+                        }
+                    },
+                    template: "#patients"
+                }
+            };
+        seller={
+                path: '/seller',component: {
+                    data() {
+                        return {
+                            msg: 'hi'
+                        }
+                    },
+                    template: "#seller"
+                }
+            };
+        settings={
+                path: '/settings',component: {
+                    data() {
+                        return {
+                            msg: 'hi'
+                        }
+                    },
+                    template: "#settings"
+                }
+            };
+        icons={
+                path: '/icons',component: {
+                    data() {
+                        return {
+                            msg: 'hi',
+                            icons:[
+                                {title: 'Analytics',icon: 'fas fa-chart-pie'},
+                                {title: 'Stock',icon: 'fas fa-search'},
+                                {title: 'Stock',icon: 'fas fa-shopping-bag'},
+                                {title: 'Stock',icon: 'far fa-address-book'},
+                                {title: 'Stock',icon: 'far fa-copy'},
+                                {title: 'Stock',icon: 'far fa-clipboard'},
+                                {title: 'Stock',icon: 'far fa-address-card'},
+                                {title: 'Stock',icon: 'far fa-bell'},
+                                {title: 'Stock',icon: 'far fa-chart-bar'},
+                                {title: 'Stock',icon: 'fas fa-ambulance'},
+                                {title: 'QR',icon: 'fas fa-qrcode'},
+                                {title: 'Barcode',icon: 'fas fa-barcode'},
+                                {title: 'Archive',icon: 'fas fa-archive'},
+                                {title: 'Box open',icon: 'fas fa-box-open'},
+                                {title: 'Dolly',icon: 'fas fa-dolly-flatbed'},
+                                {title: 'Stock',icon: 'fas fa-briefcase'},
+                                {title: 'Stock',icon: 'fas fa-dolly'},
+                                {title: 'Stock',icon: 'fas fa-bullhorn'},
+                                {title: 'Medicals',icon: 'fas fa-capsules'},
+                                {title: 'Stock',icon: 'fas fa-cart-plus'},
+                                {title: 'Stock',icon: 'fas fa-cart-arrow-down'},
+                                {title: 'Upload data',icon: 'fas fa-cloud-upload-alt'},
+                                {title: 'Download data',icon: 'fas fa-cloud-download-alt'},
+                                {title: 'Coins',icon: 'fas fa-coins'},
+                                {title: 'DB',icon: 'fas fa-database'},
+                                {title: 'Desktop',icon: 'fas fa-desktop'},
+                                {title: 'Stock',icon: 'fas fa-file-medical-alt'},
+                                {title: 'Gem',icon: 'fas fa-gem'},
+                                {title: 'Gifts',icon: 'fas fa-gift'},
+                                {title: 'Stagier',icon: 'fas fa-graduation-cap'},
+                                {title: 'Home',icon: 'fas fa-home'},
+                                {title: 'card',icon: 'fas fa-id-card'},
+                                {title: 'Key',icon: 'fas fa-key'},
+                                {title: 'Map',icon: 'fas fa-map'},
+                                {title: 'Phone',icon: 'fas fa-phone'},
+                                {title: 'fax',icon: 'fas fa-fax'},
+                                {title: 'Print',icon: 'fas fa-print'},
+                                {title: 'Save',icon: 'fas fa-save'},
+                                {title: 'Share',icon: 'fas fa-share-alt'},
+                                {title: 'Stock',icon: 'fas fa-shipping-fast'},
+                                {title: 'Terms',icon: 'fas fa-university'},
+                                {title: 'User setting',icon: 'fas fa-user-cog'},
+                                {title: 'Groups',icon: 'fas fa-users'},
+                                {title: 'Peyment',icon: 'fas fa-hand-holding-usd'},
+                                {title: 'Stock',icon: 'far fa-credit-card'},
+                                {title: 'Euro',icon: 'fas fa-euro-sign'},
+                                {title: 'Wallet',icon: 'fas fa-wallet'},
+                                {title: 'Stock',icon: 'fas fa-wrench'},
+                                {title: 'Stock',icon: 'fab fa-whmcs'},
+                            ]
+                        }
+                    },
+                    template: "#icons"
+                }
+            };
+        analytics={
+                path: '/analytics',component: {
+                    data() {
+                        return {
+                            msg: 'hi'
+                        }
+                    },
+                    template: "#analytics"
+                }
+            };
+
+        var routes = [
+            home,sell,facture,storage,fournissure,stagier,patients,seller,settings,icons,analytics
+            ,
+            {path: '*',redirect: '/home'}
+        ];
+
+        const router = new VueRouter({
+            routes // short for `routes: routes`
+        });
+        new Vue({
+            el:"#app",
+            router,
+            data() {
+                return {
+                    drawer: null,
+                    items: [
+                        {title: 'Home',icon: 'dashboard'},
+                        {title: 'Sell',icon: 'fas fa-shopping-cart'},
+                        {title: 'Factures',icon: 'fas fa-paste'},
+                        {title: 'Storage',icon: 'fas fa-box'},
+                        {title: 'Fournissure',icon: 'fas fa-truck'},
+                        {title: 'Stagier',icon: 'fas fa-user-graduate'},
+                        {title: 'Patients',icon: 'fas fa-heartbeat'},
+                        {title: 'Seller',icon: 'fas fa-id-card-alt'},
+                        {title: 'Analytics',icon: 'fas fa-chart-line'},
+                        {title: 'Settings',icon: 'fas fa-cogs'},
+                        {title: 'Icons',icon: 'fab fa-accessible-icon'},
+                    ],
+                    mini: false,
+                    right: null
+                }
+            },
+            mounted(){
+                this.$vuetify.theme.primary = '#4caf50'
+            }
+        })
+    </script>
+</body>
+</html>
