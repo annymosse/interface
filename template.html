@@ -122,7 +122,7 @@
                             <td :class="!props.item.recover?'unRecover':''">{{ props.item.nomCom }}</td>
                             <td :class="!props.item.recover?'unRecover':''" class="recover">{{ props.item.dose }}</td>
                             <td :class="!props.item.recover?'unRecover':''">{{ props.item.form }}</td>
-                            <td :class="!props.item.recover?'unRecover':''" class="-text-xs-right">{{ props.item.num }}</td>
+                            <!-- <td :class="!props.item.recover?'unRecover':''" class="-text-xs-right">{{ props.item.num }}</td> -->
                             <!-- num,dci -->
                         </template>
                         <v-alert slot="no-results" :value="true" color="error" icon="warning">
@@ -395,7 +395,7 @@
                                     },
                                     { text: 'Dose', value: 'dose' },
                                     { text: 'Form', value: 'form' },
-                                    { text: 'Price', value: 'recover' }
+                                    // { text: 'Price', value: 'recover' }
                                 ],
                                 bodyList: medics
                             },
@@ -420,10 +420,10 @@
                     },
                     methods:{
                         custumFilter(items, search, filter){
-                                search = search.toString().toLowerCase()
-                                return items.filter(i => (
-                                    Object.keys(i).some(j => filter(i[j], search))
-                                ))
+                            search = search.toString().toLowerCase()
+                            return items.filter(i => (
+                                Object.keys(i).some(j => filter(i[j], search))
+                            ))
                         }
                     },
                     template: "#sell"
