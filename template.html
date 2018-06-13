@@ -223,7 +223,7 @@
                                     <v-icon>far fa-file-alt</v-icon>
                                 </v-list-tile-action>
                                 <v-list-tile-content>
-                                    <v-list-tile-title>Import file</v-list-tile-title>
+                                    <v-list-tile-title>Import facture</v-list-tile-title>
                                 </v-list-tile-content>
                             </v-list-tile>
                         </v-list>
@@ -645,7 +645,8 @@
     </template>
     <template id="fournissure">
         <v-layout justify-center>
-            <div>fournissure {{msg}}</div>
+            <h1 v-if="typeof($route.params.name)=='undefined'">Hellow kids!</h1>
+            <div v-else>fournissure have name {{ $route.params.name}}</div>
         </v-layout>
     </template>
     <template id="stagier">
@@ -685,12 +686,21 @@
             </v-flex>
         </v-layout>
     </template>
+    <template id="bad">
+        <v-layout wrap justify-center>
+            <v-flex xs4>
+                <h1>Bad route =(</h1>
+                <h1 style="font-size: 200px">404</h1>
+            </v-flex>
+        </v-layout>
+    </template>
 
     <script src="https://chancejs.com/chance.min.js"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js'></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.0.1/vue-router.js'></script>
+    <!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.0.1/vue-router.js'></script> -->
+    <script src="https://unpkg.com/vue-router"></script>
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/vuetify/1.1.0-alpha.3/vuetify.min.js"></script> -->
     <script src="https://unpkg.com/vuetify@1.1.0-beta.3/dist/vuetify.min.js"></script>
     <script src="medic.json.js"></script>
@@ -1171,15 +1181,15 @@
                 }
             };
         fournissure={
-                path: '/fournissure',component: {
-                    data() {
-                        return {
-                            msg: 'hi'
-                        }
-                    },
-                    template: "#fournissure"
-                }
-            };
+            path: '/fournissure/:name?',component: {
+                data() {
+                    return {
+                        msg: 'hi'
+                    }
+                },
+                template: "#fournissure"
+            }
+        };
         stagier={
                 path: '/stagier',component: {
                     data() {
@@ -1295,7 +1305,7 @@
         var routes = [
             home,sell,facture,storage,fournissure,stagier,patients,seller,settings,icons,analytics
             ,
-            {path: '*',redirect: '/home'}
+            {path: '*',component:{template:'#bad'}}
         ];
 
         const router = new VueRouter({
