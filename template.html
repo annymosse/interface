@@ -47,6 +47,17 @@
             /* background-color: blue; */
             width: 100%
         }
+        .transp{
+            background: rgba(0,0,0,0);
+            background: -moz-linear-gradient(top, rgba(0,0,0,0) 0%, rgba(0,0,0,0.44) 52%, rgba(0,0,0,1) 100%);
+            background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(0,0,0,0)), color-stop(52%, rgba(0,0,0,0.44)), color-stop(100%, rgba(0,0,0,1)));
+            background: -webkit-linear-gradient(top, rgba(0,0,0,0) 0%, rgba(0,0,0,0.44) 52%, rgba(0,0,0,1) 100%);
+            background: -o-linear-gradient(top, rgba(0,0,0,0) 0%, rgba(0,0,0,0.44) 52%, rgba(0,0,0,1) 100%);
+            background: -ms-linear-gradient(top, rgba(0,0,0,0) 0%, rgba(0,0,0,0.44) 52%, rgba(0,0,0,1) 100%);
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.44) 52%, rgba(0,0,0,1) 100%);
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#000000', GradientType=0 );
+
+        }
     </style>
 </head>
 <body>
@@ -644,9 +655,130 @@
         </v-layout>
     </template>
     <template id="fournissure">
-        <v-layout justify-center>
-            <h1 v-if="typeof($route.params.name)=='undefined'">Hellow kids!</h1>
-            <div v-else>fournissure have name {{ $route.params.name}}</div>
+        <v-layout wrap justify-center v-if="typeof($route.params.name)=='undefined'">
+            <v-flex xs12 sm6 md4 lg3 v-for="(four,i) in fournissures" :key='i'>
+                <v-card>
+                    <v-card-media :src="four.image" height="200px">
+                        <v-layout column class="media">
+                            <v-card-title>
+                                <v-menu transition="slide-x-transition">
+                                    <!-- <v-btn slot="activator" color="primary" dark>Dropdown</v-btn> -->
+                                    <v-btn dark icon slot="activator">
+                                            <v-icon style="text-shadow: 0 0 6px black;">more_vert</v-icon>
+                                        </v-btn>
+                                        <v-list dense class="pt-0 pb-0">
+                                            <v-list-tile @click="">
+                                                <v-list-tile-action>
+                                                    <v-icon>fas fa-pencil-alt</v-icon>
+                                                </v-list-tile-action>
+                                                <v-list-tile-content>
+                                                    <v-list-tile-title>Manual</v-list-tile-title>
+                                                </v-list-tile-content>
+                                            </v-list-tile>
+                                            <v-list-tile @click="">
+                                                <v-list-tile-action>
+                                                    <v-icon>fas fa-qrcode</v-icon>
+                                                </v-list-tile-action>
+                                                <v-list-tile-content>
+                                                    <v-list-tile-title>QR code</v-list-tile-title>
+                                                </v-list-tile-content>
+                                            </v-list-tile>
+                                            <v-list-tile @click="">
+                                                <v-list-tile-action>
+                                                    <v-icon>far fa-file-alt</v-icon>
+                                                </v-list-tile-action>
+                                                <v-list-tile-content>
+                                                    <v-list-tile-title>Import facture</v-list-tile-title>
+                                                </v-list-tile-content>
+                                            </v-list-tile>
+                                        </v-list>
+                                </v-menu>
+                                <v-spacer></v-spacer>
+                                <!-- <v-btn dark icon class="mr-3">
+                                    <v-icon>edit</v-icon>
+                                </v-btn> -->
+                                <v-btn dark icon :to="{path:'/fournissure/'+(i+1)}">
+                                    <v-icon style="text-shadow: 0 0 6px black;" >chevron_right</v-icon>
+                                </v-btn>
+                            </v-card-title>
+                            <v-spacer></v-spacer>
+                            <v-card-title class="white--text pl-1 pt-2 transp">
+                                <div class="headline pl-1 pt-2">{{four.full_name}}</div>
+                            </v-card-title>
+                        </v-layout>
+                    </v-card-media>
+                </v-card>
+            </v-flex>
+        </v-layout>
+        <v-layout wrap justify-center v-else>
+            <!-- {{ this.auth($route.params.name)?$router.replace('/404'):null }} -->
+            <div v-show="false">
+                {{ Four=fournissures[($route.params.name-1)] }}
+            </div>
+            <v-flex xs12>
+                <v-card ripple>
+                    <v-card-media ripple :src="Four.image" height="200px">
+                        <v-layout column class="media">
+                            <v-card-title>
+                                <v-btn dark icon :to="{path:'/fournissure'}">
+                                    <v-icon style="text-shadow: 0 0 6px black;">chevron_left</v-icon>
+                                </v-btn>
+                                <div class="display-1" style="text-shadow: 0 0 9px black;color: white;">
+                                    {{Four.full_name}}
+                                </div>
+                                <v-spacer></v-spacer>
+                                <v-menu transition="slide-x-transition">
+                                    <v-btn dark icon slot="activator">
+                                        <v-icon style="text-shadow: 0 0 6px black;">more_vert</v-icon>
+                                    </v-btn>
+                                    <v-list dense class="pt-0 pb-0">
+                                        <v-list-tile @click="">
+                                            <v-list-tile-action>
+                                                <v-icon>fas fa-pencil-alt</v-icon>
+                                            </v-list-tile-action>
+                                            <v-list-tile-content>
+                                                <v-list-tile-title>Manual</v-list-tile-title>
+                                            </v-list-tile-content>
+                                        </v-list-tile>
+                                        <v-list-tile @click="">
+                                            <v-list-tile-action>
+                                                <v-icon>fas fa-qrcode</v-icon>
+                                            </v-list-tile-action>
+                                            <v-list-tile-content>
+                                                <v-list-tile-title>QR code</v-list-tile-title>
+                                            </v-list-tile-content>
+                                        </v-list-tile>
+                                        <v-list-tile @click="">
+                                            <v-list-tile-action>
+                                                <v-icon>far fa-file-alt</v-icon>
+                                            </v-list-tile-action>
+                                            <v-list-tile-content>
+                                                <v-list-tile-title>Import facture</v-list-tile-title>
+                                            </v-list-tile-content>
+                                        </v-list-tile>
+                                    </v-list>
+                                </v-menu>
+                                <!-- <v-btn dark icon :to="{path:'/fournissure/'+(i+1)}">
+                                    <v-icon style="text-shadow: 0 0 6px black;" >chevron_right</v-icon>
+                                </v-btn> -->
+                            </v-card-title>
+                            <v-spacer></v-spacer>
+                            <!-- <v-card-title class="white--text pl-1 pt-0 transp">
+                                <div class="headline pl-1 pt-2">{{Four.full_name}}</div>
+                            </v-card-title> -->
+                        </v-layout>
+                    </v-card-media>
+                </v-card>
+                <v-flex style="margin: -80px 0 0 20px;width: 150px" v-show="WIDTH>420">
+                    <v-card style="border-radius: 10px;border: 1px solid white">
+                        <v-card-media :src="Four.image" height="150px">
+                        </v-card-media>
+                    </v-card>
+                </v-flex>
+            </v-flex>
+            <v-flex xs12>
+                {{WIDTH}}
+            </v-flex>
         </v-layout>
     </template>
     <template id="stagier">
@@ -1184,8 +1316,105 @@
             path: '/fournissure/:name?',component: {
                 data() {
                     return {
-                        msg: 'hi'
+                        msg: 'hi',
+                        WIDTH:0,
+                        fournissures:[
+                            {
+                                full_name:chance.name(),
+                                image:"https://randomuser.me/api/portraits/men/"+chance.integer({min:1,max:99})+".jpg",
+                                uid:chance.integer({min:0,max:10000}).toString(),
+                                phone:[],
+                                fax:'',
+                                address:'',
+                                email:[],
+                                factures:[]
+                            },
+                            {
+                                full_name:chance.name(),
+                                image:"https://randomuser.me/api/portraits/men/"+chance.integer({min:1,max:99})+".jpg",
+                                uid:chance.integer({min:0,max:10000}).toString(),
+                                phone:[],
+                                fax:'',
+                                address:'',
+                                email:[],
+                                factures:[]
+                            },
+                            {
+                                full_name:chance.name(),
+                                image:"https://randomuser.me/api/portraits/men/"+chance.integer({min:1,max:99})+".jpg",
+                                uid:chance.integer({min:0,max:10000}).toString(),
+                                phone:[],
+                                fax:'',
+                                address:'',
+                                email:[],
+                                factures:[]
+                            },
+                            {
+                                full_name:chance.name(),
+                                image:"https://randomuser.me/api/portraits/men/"+chance.integer({min:1,max:99})+".jpg",
+                                uid:chance.integer({min:0,max:10000}).toString(),
+                                phone:[],
+                                fax:'',
+                                address:'',
+                                email:[],
+                                factures:[]
+                            },
+                            {
+                                full_name:chance.name(),
+                                image:"https://randomuser.me/api/portraits/men/"+chance.integer({min:1,max:99})+".jpg",
+                                uid:chance.integer({min:0,max:10000}).toString(),
+                                phone:[],
+                                fax:'',
+                                address:'',
+                                email:[],
+                                factures:[]
+                            },
+
+                            {
+                                full_name:chance.name(),
+                                image:"https://randomuser.me/api/portraits/men/"+chance.integer({min:1,max:99})+".jpg",
+                                uid:chance.integer({min:0,max:10000}).toString(),
+                                phone:[],
+                                fax:'',
+                                address:'',
+                                email:[],
+                                factures:[]
+                            },
+                            {
+                                full_name:chance.name(),
+                                image:"https://randomuser.me/api/portraits/men/"+chance.integer({min:1,max:99})+".jpg",
+                                uid:chance.integer({min:0,max:10000}).toString(),
+                                phone:[],
+                                fax:'',
+                                address:'',
+                                email:[],
+                                factures:[]
+                            },
+                            {
+                                full_name:chance.name(),
+                                image:"https://randomuser.me/api/portraits/men/"+chance.integer({min:1,max:99})+".jpg",
+                                uid:chance.integer({min:0,max:10000}).toString(),
+                                phone:[],
+                                fax:'',
+                                address:'',
+                                email:[],
+                                factures:[]
+                            },
+                        ],
+                        Four:{},
                     }
+                },
+                methods:{
+                    auth(url){
+                        return this.fournissures.map(e=>{return e.uid}).indexOf(url) == -1
+                    }
+                },
+                mounted(){
+                    var that=this;
+                    this.WIDTH=$(window).width();
+                    $(window).on('resize',function(){
+                        that.WIDTH=$(this).width()
+                    })
                 },
                 template: "#fournissure"
             }
@@ -1305,6 +1534,7 @@
         var routes = [
             home,sell,facture,storage,fournissure,stagier,patients,seller,settings,icons,analytics
             ,
+            {path:'/',redirect:'/home'},
             {path: '*',component:{template:'#bad'}}
         ];
 
