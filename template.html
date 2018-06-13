@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://unpkg.com/vuetify@1.1.0-beta.3/dist/vuetify.min.css">
 
     <style>
+        [v-cloak] { display:none; }
         .v-list__tile--active{
             border-right: 5px solid;
         }
@@ -62,7 +63,7 @@
 </head>
 <body>
     <div id="app">
-        <v-app>
+        <v-app v-cloak>
             <v-navigation-drawer width="260" app v-model="drawer" :mini-variant="mini" :permanent="!this.$vuetify.breakpoint.mdAndDown" _dark _absolute _fixed>
                 <v-list class="pa-1">
                     <v-list-tile v-if="mini" @click.stop="mini = !mini">
@@ -716,17 +717,17 @@
                 {{ Four=fournissures[($route.params.name-1)] }}
             </div>
             <v-flex xs12>
-                <v-card ripple>
-                    <v-card-media ripple :src="Four.image" height="200px">
-                        <v-layout column class="media">
+                <v-card>
+                    <v-card-media :src="Four.image" v-ripple height="200px">
+                        <v-layout column class="media" class="transp">
                             <v-card-title>
-                                <v-btn dark icon :to="{path:'/fournissure'}">
+                                <v-btn dark icon :to="{path:'/fournissure'}" style="margin-left: -5px;">
                                     <v-icon style="text-shadow: 0 0 6px black;">chevron_left</v-icon>
                                 </v-btn>
                                 <div class="display-1" style="text-shadow: 0 0 9px black;color: white;">
                                     {{Four.full_name}}
                                 </div>
-                                <v-spacer></v-spacer>
+                                <!-- <v-spacer></v-spacer>
                                 <v-menu transition="slide-x-transition">
                                     <v-btn dark icon slot="activator">
                                         <v-icon style="text-shadow: 0 0 6px black;">more_vert</v-icon>
@@ -757,27 +758,526 @@
                                             </v-list-tile-content>
                                         </v-list-tile>
                                     </v-list>
-                                </v-menu>
+                                </v-menu> -->
                                 <!-- <v-btn dark icon :to="{path:'/fournissure/'+(i+1)}">
                                     <v-icon style="text-shadow: 0 0 6px black;" >chevron_right</v-icon>
                                 </v-btn> -->
                             </v-card-title>
-                            <v-spacer></v-spacer>
+                            <!-- <v-spacer></v-spacer> -->
                             <!-- <v-card-title class="white--text pl-1 pt-0 transp">
                                 <div class="headline pl-1 pt-2">{{Four.full_name}}</div>
                             </v-card-title> -->
                         </v-layout>
                     </v-card-media>
+                    <v-divider></v-divider>
+                    <v-flex style="margin: -100px 0 -35px 20px;width: 150px" v-show="WIDTH>425">
+                        <v-card style="border-radius: 10px;border: 1px solid white;box-shadow: 0 0 24px -6px black;">
+                            <v-card-media :src="Four.image" height="150px">
+                            </v-card-media>
+                        </v-card>
+                    </v-flex>
+                    <v-card-actions>
+                        <!-- <v-spacer></v-spacer>
+                            {{Four.full_name}} -->
+                        <v-spacer></v-spacer>
+                        <v-btn icon>
+                            <v-icon>favorite</v-icon>
+                        </v-btn>
+                        <v-btn icon @click.native="add2book(Four.uid)">
+                            <v-icon :color="book.indexOf(Four.uid)>-1?'green':'bookmark_border'">{{book.indexOf(Four.uid)>-1?'bookmark':'bookmark_border'}}</v-icon>
+                        </v-btn>
+                        <v-menu transition="slide-y-transition" top left>
+                            <v-btn dark icon slot="activator">
+                                <v-icon color="black">more_vert</v-icon>
+                            </v-btn>
+                            <v-list dense class="pt-0 pb-0">
+                                <v-list-tile @click="">
+                                    <v-list-tile-action>
+                                        <v-icon>fas fa-pencil-alt</v-icon>
+                                    </v-list-tile-action>
+                                    <v-list-tile-content>
+                                        <v-list-tile-title>Manual</v-list-tile-title>
+                                    </v-list-tile-content>
+                                </v-list-tile>
+                                <v-list-tile @click="">
+                                    <v-list-tile-action>
+                                        <v-icon>fas fa-qrcode</v-icon>
+                                    </v-list-tile-action>
+                                    <v-list-tile-content>
+                                        <v-list-tile-title>QR code</v-list-tile-title>
+                                    </v-list-tile-content>
+                                </v-list-tile>
+                                <v-list-tile @click="">
+                                    <v-list-tile-action>
+                                        <v-icon>far fa-file-alt</v-icon>
+                                    </v-list-tile-action>
+                                    <v-list-tile-content>
+                                        <v-list-tile-title>Import facture</v-list-tile-title>
+                                    </v-list-tile-content>
+                                </v-list-tile>
+                            </v-list>
+                        </v-menu>
+                        <v-btn icon @click.native="show = !show">
+                            <v-icon :color="show?'':'blue'">{{show?'keyboard_arrow_up':'fas fa-info-circle'}}</v-icon>
+                        </v-btn>
+                    </v-card-actions>
+                    <v-slide-y-transition>
+                        <v-card-text v-show="show">
+                            I'm a thing. But, like most politicians, he promised more than he could deliver. You won't have time for sleeping, soldier, not with all the bed making you'll be doing. Then we'll go with that data file! Hey, you add a one and two zeros to that or we walk! You're going to do his laundry? I've got to find a way to escape.
+                        </v-card-text>
+                    </v-slide-y-transition>
                 </v-card>
-                <v-flex style="margin: -80px 0 0 20px;width: 150px" v-show="WIDTH>420">
-                    <v-card style="border-radius: 10px;border: 1px solid white">
-                        <v-card-media :src="Four.image" height="150px">
-                        </v-card-media>
-                    </v-card>
-                </v-flex>
             </v-flex>
             <v-flex xs12>
-                {{WIDTH}}
+                <!-- <v-toolbar
+                    floating
+                    dense
+                    style="width: calc(100% - 30px);background-color: white"
+                    >
+                    <v-text-field
+                        prepend-icon="search"
+                        v-model="productSearch.search"
+                        label="Search (anything)"
+                        hide-details
+                        single-line
+                        style="margin: 0 0 0 10px;width: 100%"
+                    ></v-text-field>
+                    <v-menu bottom left>
+                        <v-btn slot="activator" icon _style="border-radius: 100%;border:1px solid black">
+                            <v-icon>add</v-icon>
+                        </v-btn>
+                        <v-list dense class="pt-0 pb-0">
+                            <v-list-tile @click="">
+                                <v-list-tile-action>
+                                    <v-icon>fas fa-pencil-alt</v-icon>
+                                </v-list-tile-action>
+                                <v-list-tile-content>
+                                    <v-list-tile-title>Manual</v-list-tile-title>
+                                </v-list-tile-content>
+                            </v-list-tile>
+                            <v-list-tile @click="">
+                                <v-list-tile-action>
+                                    <v-icon>fas fa-qrcode</v-icon>
+                                </v-list-tile-action>
+                                <v-list-tile-content>
+                                    <v-list-tile-title>QR code</v-list-tile-title>
+                                </v-list-tile-content>
+                            </v-list-tile>
+                            <v-list-tile @click="">
+                                <v-list-tile-action>
+                                    <v-icon>far fa-file-alt</v-icon>
+                                </v-list-tile-action>
+                                <v-list-tile-content>
+                                    <v-list-tile-title>Import facture</v-list-tile-title>
+                                </v-list-tile-content>
+                            </v-list-tile>
+                        </v-list>
+                    </v-menu>
+                </v-toolbar> -->
+                <v-card>
+                    <v-progress-linear value="100" :indeterminate="productSearch.start_search" style="margin-bottom: 0px;margin-top: 10px"></v-progress-linear>
+                    <v-card-title>
+                        <v-text-field
+                            append-icon="search"
+                            v-model="productSearch.search"
+                            label="Search (anything)"
+                            hide-details
+                            single-line
+                            style="margin: 0 0 0 10px;width: 100%"
+                        ></v-text-field>
+                        <!-- <v-menu bottom left>
+                            <v-btn slot="activator" icon _style="border-radius: 100%;border:1px solid black">
+                                <v-icon>add</v-icon>
+                            </v-btn>
+                            <v-list dense class="pt-0 pb-0">
+                                <v-list-tile @click="">
+                                    <v-list-tile-action>
+                                        <v-icon>fas fa-pencil-alt</v-icon>
+                                    </v-list-tile-action>
+                                    <v-list-tile-content>
+                                        <v-list-tile-title>Manual</v-list-tile-title>
+                                    </v-list-tile-content>
+                                </v-list-tile>
+                                <v-list-tile @click="">
+                                    <v-list-tile-action>
+                                        <v-icon>fas fa-qrcode</v-icon>
+                                    </v-list-tile-action>
+                                    <v-list-tile-content>
+                                        <v-list-tile-title>QR code</v-list-tile-title>
+                                    </v-list-tile-content>
+                                </v-list-tile>
+                                <v-list-tile @click="">
+                                    <v-list-tile-action>
+                                        <v-icon>far fa-file-alt</v-icon>
+                                    </v-list-tile-action>
+                                    <v-list-tile-content>
+                                        <v-list-tile-title>Import facture</v-list-tile-title>
+                                    </v-list-tile-content>
+                                </v-list-tile>
+                            </v-list>
+                        </v-menu> -->
+                    </v-card-title>
+                    <v-data-table
+                        :rows-per-page-items="productSearch.limit_row"
+                        :headers="productSearch.headers"
+                        :items="productSearch.bodyList"
+                        :search="productSearch.search"
+                        item-key="nomcom"
+                    >
+                        <template slot="items" slot-scope="props">
+                            <tr @click="props.expanded = !props.expanded">
+                                <td :class="props.item.ppa>500?'unRecover':''">
+                                        <v-edit-dialog
+                                            :return-value.sync="props.item.nomcom"
+                                            large
+                                            lazy
+                                            persistent
+                                            >
+                                            <div>{{ props.item.nomcom }}</div>
+                                            <div slot="input" class="mt-3 title">Update Iron</div>
+                                            <v-text-field
+                                                slot="input"
+                                                v-model="props.item.nomcom"
+                                                :rules="[max30chars]"
+                                                label="Edit"
+                                                single-line
+                                                counter
+                                                autofocus
+                                                ></v-text-field>
+                                        </v-edit-dialog>
+                                </td>
+                                <td :class="props.item.ppa>500?'unRecover':''">
+                                    <v-edit-dialog
+                                        :return-value.sync="props.item.num_lot"
+                                        large
+                                        lazy
+                                        persistent
+                                        >
+                                        <div>{{ props.item.num_lot }}</div>
+                                        <div slot="input" class="mt-3 title">Update num lot</div>
+                                        <v-text-field
+                                            slot="input"
+                                            v-model="props.item.num_lot"
+                                            :rules="[max30chars]"
+                                            label="Edit"
+                                            single-line
+                                            counter
+                                            autofocus
+                                            ></v-text-field>
+                                    </v-edit-dialog>
+                                </td>
+                                <td :class="props.item.ppa>500?'unRecover':''">
+                                    <v-edit-dialog
+                                        :return-value.sync="props.item.expiration"
+                                        large
+                                        lazy
+                                        persistent
+                                        >
+                                        <div>{{ props.item.expiration }}</div>
+                                        <div slot="input" class="mt-3 title">Update expiration</div>
+                                        <v-text-field
+                                            slot="input"
+                                            v-model="props.item.expiration"
+                                            :rules="[max30chars]"
+                                            label="Edit"
+                                            single-line
+                                            counter
+                                            autofocus
+                                            ></v-text-field>
+                                    </v-edit-dialog>
+                                </td>
+                                <td :class="props.item.ppa>500?'unRecover':''">
+                                    <v-edit-dialog
+                                        :return-value.sync="props.item.prix_dachat"
+                                        large
+                                        lazy
+                                        persistent
+                                        >
+                                        <div>{{ props.item.prix_dachat }}</div>
+                                        <div slot="input" class="mt-3 title">Update prix d'achat</div>
+                                        <v-text-field
+                                            slot="input"
+                                            v-model="props.item.prix_dachat"
+                                            :rules="[max30chars]"
+                                            label="Edit"
+                                            single-line
+                                            counter
+                                            autofocus
+                                            ></v-text-field>
+                                    </v-edit-dialog>
+                                </td>
+                                <td :class="props.item.ppa>500?'unRecover':''">
+                                    <v-edit-dialog
+                                        :return-value.sync="props.item.ppa"
+                                        large
+                                        lazy
+                                        persistent
+                                        >
+                                        <div>{{ props.item.ppa }}</div>
+                                        <div slot="input" class="mt-3 title">Update PPA</div>
+                                        <v-text-field
+                                            slot="input"
+                                            v-model="props.item.ppa"
+                                            :rules="[max30chars]"
+                                            label="Edit"
+                                            single-line
+                                            counter
+                                            autofocus
+                                            ></v-text-field>
+                                    </v-edit-dialog>
+                                </td>
+                                <td :class="props.item.ppa>500?'unRecover':''">
+                                    <v-edit-dialog
+                                        :return-value.sync="props.item.shp"
+                                        large
+                                        lazy
+                                        persistent
+                                        >
+                                        <div>{{ props.item.shp }}</div>
+                                        <div slot="input" class="mt-3 title">Update SHP</div>
+                                        <v-text-field
+                                            slot="input"
+                                            v-model="props.item.shp"
+                                            :rules="[max30chars]"
+                                            label="Edit"
+                                            single-line
+                                            counter
+                                            autofocus
+                                            ></v-text-field>
+                                    </v-edit-dialog>
+                                </td>
+                                <td :class="props.item.ppa>500?'unRecover':''">
+                                    <v-edit-dialog
+                                        :return-value.sync="props.item.ppu"
+                                        large
+                                        lazy
+                                        persistent
+                                        >
+                                        <div>{{ props.item.ppu }}</div>
+                                        <div slot="input" class="mt-3 title">Update PPU</div>
+                                        <v-text-field
+                                            slot="input"
+                                            v-model="props.item.ppu"
+                                            :rules="[max30chars]"
+                                            label="Edit"
+                                            single-line
+                                            counter
+                                            autofocus
+                                            ></v-text-field>
+                                    </v-edit-dialog>
+                                </td>
+                                <td :class="props.item.ppa>500?'unRecover':''">
+                                    <v-edit-dialog
+                                        :return-value.sync="props.item.qtt"
+                                        large
+                                        lazy
+                                        persistent
+                                        >
+                                        <div>{{ props.item.qtt }}</div>
+                                        <div slot="input" class="mt-3 title">Update QTT</div>
+                                        <v-text-field
+                                            slot="input"
+                                            v-model="props.item.qtt"
+                                            :rules="[max30chars]"
+                                            label="Edit"
+                                            single-line
+                                            counter
+                                            autofocus
+                                            ></v-text-field>
+                                    </v-edit-dialog>
+                                </td>
+                                <td :class="props.item.ppa>500?'unRecover':''">
+                                    <v-edit-dialog
+                                        :return-value.sync="props.item.ug"
+                                        large
+                                        lazy
+                                        persistent
+                                        >
+                                        <div>{{ props.item.ug }}</div>
+                                        <div slot="input" class="mt-3 title">Update ug</div>
+                                        <v-text-field
+                                            slot="input"
+                                            v-model="props.item.ug"
+                                            :rules="[max30chars]"
+                                            label="Edit"
+                                            single-line
+                                            counter
+                                            autofocus
+                                            ></v-text-field>
+                                    </v-edit-dialog>
+                                </td>
+                                <td :class="props.item.ppa>500?'unRecover':''">
+                                    <v-edit-dialog
+                                        :return-value.sync="props.item.rist"
+                                        large
+                                        lazy
+                                        persistent
+                                        >
+                                        <div>{{ props.item.rist }}</div>
+                                        <div slot="input" class="mt-3 title">Update rist</div>
+                                        <v-text-field
+                                            slot="input"
+                                            v-model="props.item.rist"
+                                            :rules="[max30chars]"
+                                            label="Edit"
+                                            single-line
+                                            counter
+                                            autofocus
+                                            ></v-text-field>
+                                    </v-edit-dialog>
+                                </td>
+                                <td :class="props.item.ppa>500?'unRecover':''">
+                                    <v-edit-dialog
+                                        :return-value.sync="props.item.tva"
+                                        large
+                                        lazy
+                                        persistent
+                                        >
+                                        <div>{{ props.item.tva }}</div>
+                                        <div slot="input" class="mt-3 title">Update TVA</div>
+                                        <v-text-field
+                                            slot="input"
+                                            v-model="props.item.tva"
+                                            :rules="[max30chars]"
+                                            label="Edit"
+                                            single-line
+                                            counter
+                                            autofocus
+                                            ></v-text-field>
+                                    </v-edit-dialog>
+                                </td>
+                                <td :class="props.item.ppa>500?'unRecover':''">
+                                    <v-edit-dialog
+                                        :return-value.sync="props.item.tva"
+                                        large
+                                        lazy
+                                        persistent
+                                        >
+                                        <div>{{ props.item.marge }}</div>
+                                        <div slot="input" class="mt-3 title">Update marge</div>
+                                        <v-text-field
+                                            slot="input"
+                                            v-model="props.item.marge"
+                                            :rules="[max30chars]"
+                                            label="Edit"
+                                            single-line
+                                            counter
+                                            autofocus
+                                            ></v-text-field>
+                                    </v-edit-dialog>
+                                </td>
+                                <td :class="props.item.ppa>500?'unRecover':''">
+                                    <v-edit-dialog
+                                        :return-value.sync="props.item.status"
+                                        large
+                                        lazy
+                                        persistent
+                                        >
+                                        <div>{{ props.item.status }}</div>
+                                        <div slot="input" class="mt-3 title">Update status</div>
+                                        <v-text-field
+                                            slot="input"
+                                            v-model="props.item.status"
+                                            :rules="[max30chars]"
+                                            label="Edit"
+                                            single-line
+                                            counter
+                                            autofocus
+                                            ></v-text-field>
+                                    </v-edit-dialog>
+                                </td>
+                                <td :class="props.item.ppa>500?'unRecover':''">
+                                    <v-edit-dialog
+                                        :return-value.sync="props.item.emplacment"
+                                        large
+                                        lazy
+                                        persistent
+                                        >
+                                        <div>{{ props.item.emplacment }}</div>
+                                        <div slot="input" class="mt-3 title">Update emplacement</div>
+                                        <v-text-field
+                                            slot="input"
+                                            v-model="props.item.emplacment"
+                                            :rules="[max30chars]"
+                                            label="Edit"
+                                            single-line
+                                            counter
+                                            autofocus
+                                            ></v-text-field>
+                                    </v-edit-dialog>
+                                </td>
+                                <td :class="props.item.ppa>500?'unRecover':''">
+                                    <v-edit-dialog
+                                        :return-value.sync="props.item.num_factur"
+                                        large
+                                        lazy
+                                        persistent
+                                        >
+                                        <div>{{ props.item.num_factur }}</div>
+                                        <div slot="input" class="mt-3 title">Update num facture</div>
+                                        <v-text-field
+                                            slot="input"
+                                            v-model="props.item.num_factur"
+                                            :rules="[max30chars]"
+                                            label="Edit"
+                                            single-line
+                                            counter
+                                            autofocus
+                                            ></v-text-field>
+                                    </v-edit-dialog>
+                                </td>
+                                <td :class="props.item.ppa>500?'unRecover':''">
+                                    <v-edit-dialog
+                                        :return-value.sync="props.item.fournis"
+                                        large
+                                        lazy
+                                        persistent
+                                        >
+                                        <div>{{ props.item.fournis }}</div>
+                                        <div slot="input" class="mt-3 title">Update fournissure</div>
+                                        <v-text-field
+                                            slot="input"
+                                            v-model="props.item.fournis"
+                                            :rules="[max30chars]"
+                                            label="Edit"
+                                            single-line
+                                            counter
+                                            autofocus
+                                            ></v-text-field>
+                                    </v-edit-dialog>
+                                </td>
+                                <td :class="props.item.ppa>500?'unRecover':''">
+                                    <v-edit-dialog
+                                        :return-value.sync="props.item.date_factur"
+                                        large
+                                        lazy
+                                        persistent
+                                        >
+                                        <div>{{ props.item.date_factur }}</div>
+                                        <div slot="input" class="mt-3 title">Update facture</div>
+                                        <v-text-field
+                                            slot="input"
+                                            v-model="props.item.date_factur"
+                                            :rules="[max30chars]"
+                                            label="Edit"
+                                            single-line
+                                            counter
+                                            autofocus
+                                            ></v-text-field>
+                                    </v-edit-dialog>
+                                </td>
+                            </tr>
+                        </template>
+                        <!-- <template slot="expand" slot-scope="props">
+                            <v-card flat style="height: 100px;border: 2px dashed #0000005c;box-shadow: inset 0 0 20px black;">
+                                <v-card-text>Fournissure: {{ props.item.fournis }}</v-card-text>
+                            </v-card>
+                        </template> -->
+                        <v-alert slot="no-results" :value="true" color="error" icon="warning">
+                        Your search for "{{ productSearch.search }}" found no results.
+                        </v-alert>
+                    </v-data-table>
+                </v-card>
             </v-flex>
         </v-layout>
     </template>
@@ -1317,7 +1817,9 @@
                 data() {
                     return {
                         msg: 'hi',
+                        show:false,
                         WIDTH:0,
+                        max30chars: (v) => v.toString().length <= 30 || 'Input too long!',
                         fournissures:[
                             {
                                 full_name:chance.name(),
@@ -1402,11 +1904,213 @@
                             },
                         ],
                         Four:{},
+                        book:[],
+                        booked:false,
+                        productSearch:{
+                            search: '',
+                            limit_row:[5,10,{text:'All',value:-1}],
+                            start_search:false,
+                            headers: [
+                                { text: 'nomcom', value: 'nomcom',align: 'left',sortable: false },
+                                { text: 'num lot', value: 'num_lot' },
+                                { text: 'expiration', value: 'expiration' },
+                                { text: 'prix dachat', value: 'prix_dachat' },
+                                { text: 'ppa', value: 'ppa' },
+                                { text: 'shp', value: 'shp' },
+                                { text: 'ppu(vent)', value: 'ppu' },
+                                { text: 'qtt', value: 'qtt' },
+                                { text: 'ug ?', value: 'ug' },
+                                { text: 'rist (%) ?', value: 'rist' },
+                                { text: 'tva', value: 'tva' },
+                                { text: 'marge (%)', value: 'marge' },
+                                { text: 'status (confirm)', value: 'status' },
+                                { text: 'emplacment', value: 'emplacment' },
+                                { text: 'num factur', value: 'num_factur' },
+                                { text: 'fournis', value: 'fournis' },
+                                { text: 'date factur', value: 'date_factur' }
+                            ],
+                            bodyList: [
+                                {
+                                    nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    expiration:chance.date({string: true}),
+                                    prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                    ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    qtt:chance.integer({ min: 1, max: 500 }),
+                                    ug:'',
+                                    rist:'',
+                                    tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                    status:chance.bool(),
+                                    emplacment:'',
+                                    num_factur:chance.integer({ min: 1, max: 500 }),
+                                    fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    date_factur:chance.date({string: true}),
+                                },
+                                {
+                                    nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    expiration:chance.date({string: true}),
+                                    prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                    ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    qtt:chance.integer({ min: 1, max: 500 }),
+                                    ug:'',
+                                    rist:'',
+                                    tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                    status:chance.bool(),
+                                    emplacment:'',
+                                    num_factur:chance.integer({ min: 1, max: 500 }),
+                                    fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    date_factur:chance.date({string: true}),
+                                },
+                                {
+                                    nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    expiration:chance.date({string: true}),
+                                    prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                    ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    qtt:chance.integer({ min: 1, max: 500 }),
+                                    ug:'',
+                                    rist:'',
+                                    tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                    status:chance.bool(),
+                                    emplacment:'',
+                                    num_factur:chance.integer({ min: 1, max: 500 }),
+                                    fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    date_factur:chance.date({string: true}),
+                                },
+                                {
+                                    nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    expiration:chance.date({string: true}),
+                                    prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                    ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    qtt:chance.integer({ min: 1, max: 500 }),
+                                    ug:'',
+                                    rist:'',
+                                    tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                    status:chance.bool(),
+                                    emplacment:'',
+                                    num_factur:chance.integer({ min: 1, max: 500 }),
+                                    fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    date_factur:chance.date({string: true}),
+                                },
+                                {
+                                    nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    expiration:chance.date({string: true}),
+                                    prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                    ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    qtt:chance.integer({ min: 1, max: 500 }),
+                                    ug:'',
+                                    rist:'',
+                                    tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                    status:chance.bool(),
+                                    emplacment:'',
+                                    num_factur:chance.integer({ min: 1, max: 500 }),
+                                    fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    date_factur:chance.date({string: true}),
+                                },
+                                {
+                                    nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    expiration:chance.date({string: true}),
+                                    prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                    ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    qtt:chance.integer({ min: 1, max: 500 }),
+                                    ug:'',
+                                    rist:'',
+                                    tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                    status:chance.bool(),
+                                    emplacment:'',
+                                    num_factur:chance.integer({ min: 1, max: 500 }),
+                                    fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    date_factur:chance.date({string: true}),
+                                },
+                                {
+                                    nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    expiration:chance.date({string: true}),
+                                    prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                    ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    qtt:chance.integer({ min: 1, max: 500 }),
+                                    ug:'',
+                                    rist:'',
+                                    tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                    status:chance.bool(),
+                                    emplacment:'',
+                                    num_factur:chance.integer({ min: 1, max: 500 }),
+                                    fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    date_factur:chance.date({string: true}),
+                                },
+                                {
+                                    nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    expiration:chance.date({string: true}),
+                                    prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                    ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    qtt:chance.integer({ min: 1, max: 500 }),
+                                    ug:'',
+                                    rist:'',
+                                    tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                    status:chance.bool(),
+                                    emplacment:'',
+                                    num_factur:chance.integer({ min: 1, max: 500 }),
+                                    fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    date_factur:chance.date({string: true}),
+                                },
+                                {
+                                    nomcom:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    num_lot:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    expiration:chance.date({string: true}),
+                                    prix_dachat:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    ppa:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    shp:chance.floating({ fixed:2,min:0,max:100 }),
+                                    ppu:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    qtt:chance.integer({ min: 1, max: 500 }),
+                                    ug:'',
+                                    rist:'',
+                                    tva:chance.floating({ fixed:2,min:10,max:1000 }),
+                                    marge:chance.floating({ fixed:2,min:0,max:100 }),
+                                    status:chance.bool(),
+                                    emplacment:'',
+                                    num_factur:chance.integer({ min: 1, max: 500 }),
+                                    fournis:chance.name({ middle: chance.bool(),middle_initial: chance.bool(),prefix: chance.bool(),suffix: chance.bool()}),
+                                    date_factur:chance.date({string: true}),
+                                }
+                            ]
+                        },
                     }
                 },
                 methods:{
                     auth(url){
                         return this.fournissures.map(e=>{return e.uid}).indexOf(url) == -1
+                    },
+                    add2book(uid){
+                        this.book.push(uid)
                     }
                 },
                 mounted(){
