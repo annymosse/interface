@@ -119,8 +119,15 @@
                         :custom-filter="custumFilter"
                     >
                         <template slot="items" slot-scope="props">
-                            <td :class="!props.item.recover?'unRecover':''">{{ props.item.nomCom }}</td>
-                            <td :class="!props.item.recover?'unRecover':''" class="recover">{{ props.item.dose }}</td>
+                            <td :class="!props.item.recover?'unRecover':''">
+                                <div style="display: block">
+                                    <div>
+                                        {{ props.item.nomCom }}
+                                    </div>
+                                    <h5>{{ props.item.dose }}</h5>
+                                </div>
+                            </td>
+                            <!-- <td :class="!props.item.recover?'unRecover':''" class="recover">{{ props.item.dose }}</td> -->
                             <td :class="!props.item.recover?'unRecover':''">{{ props.item.form }}</td>
                             <!-- <td :class="!props.item.recover?'unRecover':''" class="-text-xs-right">{{ props.item.num }}</td> -->
                             <!-- num,dci -->
@@ -393,7 +400,7 @@
                                         sortable: true,
                                         value: 'nomCom'
                                     },
-                                    { text: 'Dose', value: 'dose' },
+                                    // { text: 'Dose', value: 'dose' },
                                     { text: 'Form', value: 'form' },
                                     // { text: 'Price', value: 'recover' }
                                 ],
