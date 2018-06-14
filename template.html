@@ -97,6 +97,24 @@
                     </v-list-tile>
                 </v-list>
             </v-navigation-drawer>
+            <v-snackbar
+                :timeout="0"
+                :top="true"
+                :bottom="false"
+                :right="true"
+                :left="false"
+                :multi-line="'mobile'==='mobil'"
+                :vertical="'mobile' === 'mobil'"
+                v-model="snack_offline"
+                :color="offline?'orange':'white'"
+                >
+                <v-progress-circular indeterminate color="red" v-show="offline"></v-progress-circular>
+                <v-icon color="green" v-show="!offline">far fa-check-circle</v-icon>
+                <div class="black--text">
+                    You're {{offline?'offline':'online'}}!
+                </div>
+                <v-btn flat :color="offline?'red':'green'" @click="snack_offline=false">ok</v-btn>
+            </v-snackbar>
             <v-content>
                 <v-container fluid app grid-list-sm>
                     <router-view></router-view>
@@ -755,7 +773,10 @@
             <!-- / comparation table -->
             <!-- fournissures cards -->
             <v-flex xs12 sm6 md4 lg3 v-for="(four,i) in fournissures" :key='i'>
-                <v-card>
+                <div @click="add2book(four.uid)">
+                    <v-icon style="text-shadow: 0 0 2px black;position: relative;z-index: 1;left:5px;" :color="books.indexOf(four.uid)>-1?'orange':'grey'">fas fa-bookmark</v-icon>
+                </div>
+                <v-card style="margin-top: -22px">
                     <v-card-media :src="four.image" height="200px">
                         <v-layout column class="media">
                             <v-card-title>

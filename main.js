@@ -2714,10 +2714,20 @@ new Vue({
                 },
             ],
             mini: false,
-            right: null
+            right: null,
+            offline:false,
+            snack_offline:false
         }
     },
     mounted() {
-        this.$vuetify.theme.primary = '#4caf50'
+        var that=this;
+        this.$vuetify.theme.primary = '#4caf50';
+        $(window).on('offline',()=>{
+            that.snack_offline=true;
+            that.offline=true
+        }).on('online',()=>{
+            that.snack_offline=true;
+            that.offline=false
+        })
     }
 })
