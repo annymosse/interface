@@ -21,7 +21,8 @@ sell = {
                     search: '',
                     limit_row: [5],
                     start_search: false,
-                    headers: [{
+                    headers: [
+                        {
                             text: 'Product ',
                             align: 'left',
                             sortable: true,
@@ -39,7 +40,8 @@ sell = {
                 ordonnance: {
                     filter: '',
                     limit_row: [-1],
-                    headers: [{
+                    headers: [
+                        {
                             text: 'Product ',
                             align: 'left',
                             sortable: true,
@@ -54,7 +56,8 @@ sell = {
                             value: 'price'
                         }
                     ],
-                    bodyList: [{
+                    bodyList: [
+                        {
                         product: chance.name(),
                         dose: chance.age(),
                         price: 0
@@ -87,7 +90,8 @@ facture = {
                         value: -1
                     }],
                     start_search: false,
-                    headers: [{
+                    headers: [
+                        {
                             text: 'nomcom',
                             value: 'nomcom',
                             align: 'left',
@@ -158,7 +162,8 @@ facture = {
                             value: 'date_factur'
                         }
                     ],
-                    bodyList: [{
+                    bodyList: [
+                        {
                             nomcom: chance.name({
                                 middle: chance.bool(),
                                 middle_initial: chance.bool(),
@@ -787,7 +792,8 @@ storage = {
                     value: -1
                 }],
                 search: '',
-                storageHeader: [{
+                storageHeader: [
+                    {
                         text: 'nomcom',
                         value: 'nomcom',
                         align: 'left',
@@ -858,7 +864,8 @@ storage = {
                         value: 'date_factur'
                     }
                 ],
-                storageBody: [{
+                storageBody: [
+                    {
                         nomcom: chance.name({
                             middle: chance.bool(),
                             middle_initial: chance.bool(),
@@ -1485,7 +1492,8 @@ fournissure = {
                 show: false,
                 WIDTH: 0,
                 max30chars: (v) => v.toString().length <= 30 || 'Input too long!',
-                fournissures: [{
+                fournissures: [
+                    {
                         full_name: chance.name(),
                         image: "https://randomuser.me/api/portraits/men/" + chance.integer({
                             min: 1,
@@ -1495,11 +1503,11 @@ fournissure = {
                             min: 0,
                             max: 10000
                         }).toString(),
-                        phone: [],
-                        fax: '',
-                        address: '',
-                        email: [],
-                        factures: []
+                        phone: [chance.phone({ country: "fr", mobile: true })],
+                        fax: chance.phone({ country: "fr", mobile: false }),
+                        address: chance.address({short_suffix: true}),
+                        email: [chance.email({domain: "gmail.com"})],
+                        factures: [chance.hash({length: 15})]
                     },
                     {
                         full_name: chance.name(),
@@ -1511,11 +1519,11 @@ fournissure = {
                             min: 0,
                             max: 10000
                         }).toString(),
-                        phone: [],
-                        fax: '',
-                        address: '',
-                        email: [],
-                        factures: []
+                        phone: [chance.phone({ country: "fr", mobile: true })],
+                        fax: chance.phone({ country: "fr", mobile: false }),
+                        address: chance.address({short_suffix: true}),
+                        email: [chance.email({domain: "gmail.com"})],
+                        factures: [chance.hash({length: 15})]
                     },
                     {
                         full_name: chance.name(),
@@ -1527,11 +1535,11 @@ fournissure = {
                             min: 0,
                             max: 10000
                         }).toString(),
-                        phone: [],
-                        fax: '',
-                        address: '',
-                        email: [],
-                        factures: []
+                        phone: [chance.phone({ country: "fr", mobile: true })],
+                        fax: chance.phone({ country: "fr", mobile: false }),
+                        address: chance.address({short_suffix: true}),
+                        email: [chance.email({domain: "gmail.com"})],
+                        factures: [chance.hash({length: 15})]
                     },
                     {
                         full_name: chance.name(),
@@ -1543,11 +1551,11 @@ fournissure = {
                             min: 0,
                             max: 10000
                         }).toString(),
-                        phone: [],
-                        fax: '',
-                        address: '',
-                        email: [],
-                        factures: []
+                        phone: [chance.phone({ country: "fr", mobile: true })],
+                        fax: chance.phone({ country: "fr", mobile: false }),
+                        address: chance.address({short_suffix: true}),
+                        email: [chance.email({domain: "gmail.com"})],
+                        factures: [chance.hash({length: 15})]
                     },
                     {
                         full_name: chance.name(),
@@ -1559,28 +1567,11 @@ fournissure = {
                             min: 0,
                             max: 10000
                         }).toString(),
-                        phone: [],
-                        fax: '',
-                        address: '',
-                        email: [],
-                        factures: []
-                    },
-
-                    {
-                        full_name: chance.name(),
-                        image: "https://randomuser.me/api/portraits/men/" + chance.integer({
-                            min: 1,
-                            max: 99
-                        }) + ".jpg",
-                        uid: chance.integer({
-                            min: 0,
-                            max: 10000
-                        }).toString(),
-                        phone: [],
-                        fax: '',
-                        address: '',
-                        email: [],
-                        factures: []
+                        phone: [chance.phone({ country: "fr", mobile: true })],
+                        fax: chance.phone({ country: "fr", mobile: false }),
+                        address: chance.address({short_suffix: true}),
+                        email: [chance.email({domain: "gmail.com"})],
+                        factures: [chance.hash({length: 15})]
                     },
                     {
                         full_name: chance.name(),
@@ -1592,11 +1583,11 @@ fournissure = {
                             min: 0,
                             max: 10000
                         }).toString(),
-                        phone: [],
-                        fax: '',
-                        address: '',
-                        email: [],
-                        factures: []
+                        phone: [chance.phone({ country: "fr", mobile: true })],
+                        fax: chance.phone({ country: "fr", mobile: false }),
+                        address: chance.address({short_suffix: true}),
+                        email: [chance.email({domain: "gmail.com"})],
+                        factures: [chance.hash({length: 15})]
                     },
                     {
                         full_name: chance.name(),
@@ -1608,17 +1599,50 @@ fournissure = {
                             min: 0,
                             max: 10000
                         }).toString(),
-                        phone: [],
-                        fax: '',
-                        address: '',
-                        email: [],
-                        factures: []
+                        phone: [chance.phone({ country: "fr", mobile: true })],
+                        fax: chance.phone({ country: "fr", mobile: false }),
+                        address: chance.address({short_suffix: true}),
+                        email: [chance.email({domain: "gmail.com"})],
+                        factures: [chance.hash({length: 15})]
+                    },
+                    {
+                        full_name: chance.name(),
+                        image: "https://randomuser.me/api/portraits/men/" + chance.integer({
+                            min: 1,
+                            max: 99
+                        }) + ".jpg",
+                        uid: chance.integer({
+                            min: 0,
+                            max: 10000
+                        }).toString(),
+                        phone: [chance.phone({ country: "fr", mobile: true })],
+                        fax: chance.phone({ country: "fr", mobile: false }),
+                        address: chance.address({short_suffix: true}),
+                        email: [chance.email({domain: "gmail.com"})],
+                        factures: [chance.hash({length: 15})]
+                    },
+                    {
+                        full_name: chance.name(),
+                        image: "https://randomuser.me/api/portraits/men/" + chance.integer({
+                            min: 1,
+                            max: 99
+                        }) + ".jpg",
+                        uid: chance.integer({
+                            min: 0,
+                            max: 10000
+                        }).toString(),
+                        phone: [chance.phone({ country: "fr", mobile: true })],
+                        fax: chance.phone({ country: "fr", mobile: false }),
+                        address: chance.address({short_suffix: true}),
+                        email: [chance.email({domain: "gmail.com"})],
+                        factures: [chance.hash({length: 15})]
                     },
                 ],
                 Four: {},
                 books: [],
                 supports: [],
                 compares: [],
+                startCompare:false,
                 compare_panel: false,
                 productSearch: {
                     search: '',
@@ -1627,7 +1651,8 @@ fournissure = {
                         value: -1
                     }],
                     start_search: false,
-                    headers: [{
+                    headers: [
+                        {
                             text: 'nomcom',
                             value: 'nomcom',
                             align: 'left',
@@ -1698,7 +1723,8 @@ fournissure = {
                             value: 'date_factur'
                         }
                     ],
-                    bodyList: [{
+                    bodyList: [
+                        {
                             nomcom: chance.name({
                                 middle: chance.bool(),
                                 middle_initial: chance.bool(),
@@ -2311,7 +2337,7 @@ fournissure = {
                             }),
                         }
                     ]
-                },
+                }
             }
         },
         methods: {
@@ -2324,13 +2350,25 @@ fournissure = {
                 this.books.indexOf(uid) > -1 ? this.books.splice(this.books.indexOf(uid), 1) : this.books.push(uid)
             },
             compare(uid) {
-                if (this.compares.indexOf(this.fournissures[uid]) > -1) {
-                    this.compares.splice(this.compares.indexOf(this.fournissures[uid]), 1);
-                    this.compares.length < 1 ? this.compare_panel = false : null;
-                    return
+                if(this.compares.length<4){
+                    if (this.compares.indexOf(this.fournissures[uid]) > -1) {
+                        this.compares.splice(this.compares.indexOf(this.fournissures[uid]), 1);
+                        this.compares.length < 1 ? this.compare_panel = false : null;
+                        return
+                    }
+                    this.compares.push(this.fournissures[uid]);
+                    this.compare_panel = true;
                 }
-                this.compares.push(this.fournissures[uid]);
-                this.compare_panel = true;
+                // console.log(this.compares.length)
+            },
+            CompareTheme(){
+                this.startCompare=true;
+                this.compare_panel=false
+            },
+            closeComparation(){
+                this.startCompare=!this.startCompare;
+                this.compares=[]
+
             }
         },
         mounted() {

@@ -657,19 +657,103 @@
     </template>
     <template id="fournissure">
         <v-layout wrap justify-center v-if="typeof($route.params.name)=='undefined'">
+            <!-- snackbar of start comparation -->
             <v-snackbar
                 :timeout="0"
                 :top="false"
                 :bottom="true"
                 :right="false"
                 :left="false"
-                :multi-line="'mobile'==='pc'"
-                :vertical="'mobile' === 'vertical'"
+                :multi-line="'mobile'==='mobil'"
+                :vertical="'mobile' === 'mobil'"
                 v-model="compare_panel"
               >
                 {{compares.map(e=>{return e.full_name}).join(' VS ')}}
-                <v-btn flat color="pink" @click.native="snackbar = false" v-show="compares.length>1">Compare</v-btn>
+                <v-btn flat color="pink" @click.native="CompareTheme()" v-show="compares.length>1">Compare</v-btn>
             </v-snackbar>
+            <!-- / snackbar of start comparation -->
+            <!-- snackbar of close comparation -->
+            <v-snackbar
+                :timeout="0"
+                :top="true"
+                :bottom="false"
+                :right="false"
+                :left="false"
+                :multi-line="'mobile'==='mobil'"
+                :vertical="'mobile' === 'mobil'"
+                v-model="startCompare"
+              >
+                click to close the comparation
+                <v-btn flat color="pink" @click.native="closeComparation()" v-show="startCompare">close</v-btn>
+            </v-snackbar>
+            <!-- / snackbar of close comparation -->
+            <!-- comparation table -->
+            <v-flex xs12 v-show="startCompare" transition="slide-y-transition">
+                <v-container fluid grid-list-md>
+                    <v-data-iterator
+                        hide-actions
+                        :items="compares"
+                        content-tag="v-layout"
+                        row
+                        wrap
+                    >
+                        <v-flex
+                            slot="item"
+                            slot-scope="props"
+                            xs12
+                            sm6
+                        >
+                        <v-card>
+                            <v-card-title style="padding: 0">
+                                <v-list style="padding: 0px;width: 100%" dark>
+                                    <v-list-tile avatar tag="div">
+                                        <v-list-tile-avatar>
+                                            <img :src="props.item.image" style="height: 50px;width: 50px;box-shadow: 0 0 1px black;">
+                                        </v-list-tile-avatar>
+                                        <v-list-tile-content>
+                                            <v-list-tile-title>{{ props.item.full_name }}</v-list-tile-title>
+                                        </v-list-tile-content>
+                                    </v-list-tile>
+                                </v-list>
+                            </v-card-title>
+                            <v-divider></v-divider>
+                            <v-list dense>
+                                <v-list-tile>
+                                    <v-list-tile-content>uid:</v-list-tile-content>
+                                    <v-list-tile-content class="align-end">{{ props.item.uid }}</v-list-tile-content>
+                                </v-list-tile>
+                                <v-list-tile>
+                                    <v-list-tile-content>Fat:</v-list-tile-content>
+                                    <v-list-tile-content class="align-end">{{ props.item.phone.toString() }}</v-list-tile-content>
+                                </v-list-tile>
+                                <v-list-tile>
+                                    <v-list-tile-content>Carbs:</v-list-tile-content>
+                                    <v-list-tile-content class="align-end">{{ props.item.fax }}</v-list-tile-content>
+                                </v-list-tile>
+                                <v-list-tile>
+                                    <v-list-tile-content>Protein:</v-list-tile-content>
+                                    <v-list-tile-content class="align-end">{{ props.item.address }}</v-list-tile-content>
+                                </v-list-tile>
+                                <v-list-tile>
+                                    <v-list-tile-content>Sodium:</v-list-tile-content>
+                                    <v-list-tile-content class="align-end">{{ props.item.email.toString() }}</v-list-tile-content>
+                                </v-list-tile>
+                                <v-list-tile>
+                                    <v-list-tile-content>Calcium:</v-list-tile-content>
+                                    <v-list-tile-content class="align-end">{{ props.item.factures.toString() }}</v-list-tile-content>
+                                </v-list-tile>
+                                <v-list-tile>
+                                    <v-list-tile-content>Iron:</v-list-tile-content>
+                                    <v-list-tile-content class="align-end">{{ props.item.iron }}</v-list-tile-content>
+                                </v-list-tile>
+                            </v-list>
+                        </v-card>
+                        </v-flex>
+                    </v-data-iterator>
+                </v-container>
+            </v-flex>
+            <!-- / comparation table -->
+            <!-- fournissures cards -->
             <v-flex xs12 sm6 md4 lg3 v-for="(four,i) in fournissures" :key='i'>
                 <v-card>
                     <v-card-media :src="four.image" height="200px">
@@ -696,9 +780,9 @@
                                                 <v-list-tile-title>Compaire</v-list-tile-title>
                                             </v-list-tile-content>
                                         </v-list-tile>
-                                        <v-list-tile @click="compare(i)">
+                                        <v-list-tile @click="compare(i)" >
                                             <v-list-tile-action>
-                                                <v-icon>{{compares.indexOf(i)>-1?'far fa-check-square':'far fa-square'}}</v-icon>
+                                                <v-icon>{{ compares.map(e=>{return e.uid==four.uid}).indexOf(true)>-1?'far fa-check-square':'far fa-square'}}</v-icon>
                                             </v-list-tile-action>
                                             <v-list-tile-content>
                                                 <v-list-tile-title>Compare</v-list-tile-title>
@@ -723,6 +807,7 @@
                     </v-card-media>
                 </v-card>
             </v-flex>
+            <!-- / fournissures cards -->
         </v-layout>
         <v-layout wrap justify-center v-else>
             <!-- {{ this.auth($route.params.name)?$router.replace('/404'):null }} -->
